@@ -2,11 +2,12 @@ package user
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
 var (
-	insertUserQuery = RepositoryQuery{}
+	insertUserQuery = RepositoryQuery{Name: "insertUser", Query: "INSERT ..."}
 )
 
 // RepositoryQuery represents queries of database.
@@ -34,10 +35,9 @@ func NewRepositoryImpl(db Database, dbTimeout time.Duration) *RepositoryImpl {
 	}
 }
 
-func (r *RepositoryImpl) insertUser(ctx context.Context, user *User) error {
+func (r *RepositoryImpl) insertUser(ctx context.Context, user *User) (sql.Result, error) {
 	ctxTimeout, ctxCancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer ctxCancel()
 
-	_, err := r.db.ExecInsertItem(ctxTimeout, insertUserQuery)
-	return err
+	return r.db.ExecInsertItem(ctxTimeout, insertUserQuery)
 }
