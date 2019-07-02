@@ -1,6 +1,13 @@
 package user
 
-import "time"
+import (
+	"context"
+	"time"
+)
+
+var (
+	insertUserQuery = RepositoryQuery{}
+)
 
 // RepositoryQuery represents queries of database.
 type RepositoryQuery struct {
@@ -9,7 +16,9 @@ type RepositoryQuery struct {
 }
 
 // Repository implements repository methods.
-type Repository interface{}
+type Repository interface {
+	insertUser(ctx context.Context, user *User) error
+}
 
 // RepositoryImpl repository dependecies.
 type RepositoryImpl struct {
@@ -23,4 +32,12 @@ func NewRepositoryImpl(db Database, dbTimeout time.Duration) *RepositoryImpl {
 		db:        db,
 		dbTimeout: dbTimeout,
 	}
+}
+
+func (r *RepositoryImpl) insertUser(ctx context.Context, user *User) error {
+	ctxTimeout, ctxCancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer ctxCancel()
+
+	_, err := r.db.ExecInsertItem(ctxTimeout, insertUserQuery)
+	return err
 }
