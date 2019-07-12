@@ -18,7 +18,7 @@ type RepositoryQuery struct {
 
 // Repository implements repository methods.
 type Repository interface {
-	insertUser(ctx context.Context, user *User) error
+	insertUser(ctx context.Context, user *User) (sql.Result, error)
 }
 
 // RepositoryImpl repository dependecies.
@@ -27,8 +27,8 @@ type RepositoryImpl struct {
 	dbTimeout time.Duration
 }
 
-// NewRepositoryImpl repository constructor.
-func NewRepositoryImpl(db Database, dbTimeout time.Duration) *RepositoryImpl {
+// NewRepository repository constructor.
+func NewRepository(db Database, dbTimeout time.Duration) *RepositoryImpl {
 	return &RepositoryImpl{
 		db:        db,
 		dbTimeout: dbTimeout,
