@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql" //Driver for MySQL.
+
 	"go.uber.org/zap"
 )
 
@@ -24,17 +26,11 @@ func (d *LoggableDatabase) ExecInsertItem(ctx context.Context, query RepositoryQ
 	start := time.Now()
 	result, err := d.target.ExecInsertItem(ctx, query, args)
 
-	lastID, lErr := result.LastInsertId()
-	if lErr != nil {
-		return result, lErr
-	}
-
 	d.logger.Info(
 		"db query",
 		zap.String("query", query.Name),
 		zap.Duration("duration", time.Since(start)),
 		zap.Any("args", args),
-		zap.Int64("id", lastID),
 		zap.NamedError("error", err),
 	)
 

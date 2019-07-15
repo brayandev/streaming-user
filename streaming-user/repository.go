@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	insertUserQuery = RepositoryQuery{Name: "insertUser", Query: "INSERT ..."}
+	insertUserQuery = RepositoryQuery{Name: "insertUser", Query: "INSERT INTO usr (name, email) values (?, ?)"}
 )
 
 // RepositoryQuery represents queries of database.
