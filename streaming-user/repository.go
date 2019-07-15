@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	insertUserQuery = RepositoryQuery{Name: "insertUser", Query: "INSERT INTO usr (name, email) values (?, ?)"}
+	insertUserQuery = RepositoryQuery{Name: "insertUser", Query: "INSERT testUser SET name=?, email=?"}
 )
 
 // RepositoryQuery represents queries of database.
@@ -39,5 +39,5 @@ func (r *RepositoryImpl) insertUser(ctx context.Context, user *User) (sql.Result
 	ctxTimeout, ctxCancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer ctxCancel()
 
-	return r.db.ExecInsertItem(ctxTimeout, insertUserQuery)
+	return r.db.ExecInsertItem(ctxTimeout, insertUserQuery, user)
 }

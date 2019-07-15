@@ -54,5 +54,9 @@ func NewMySQL(driverName, dataSourceName string, healthTimeout time.Duration, lo
 
 // ExecInsertItem insert item on database.
 func (d *MySQLDatabase) ExecInsertItem(ctx context.Context, query RepositoryQuery, args ...interface{}) (sql.Result, error) {
-	return d.db.ExecContext(ctx, query.Query, args)
+	stm, err := d.db.PrepareContext(ctx, query.Query)
+	if err != nil {
+		return nil, err
+	}
+	return stm.ExecContext(ctx, args)
 }

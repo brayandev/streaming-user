@@ -21,7 +21,6 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 			writeError(w, pErr)
 			user.LogError(ctx, logger, router, "cannot parse content", pErr)
 		}
-		fmt.Println(usr)
 
 		result, err := svc.InsertUser(ctx, usr)
 		if err != nil {
