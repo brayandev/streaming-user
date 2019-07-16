@@ -28,7 +28,9 @@ func main() {
 
 	repository := user.NewRepository(db, cfg.DBTimeout)
 
-	service := user.NewService(repository)
+	validators := user.NewValidators()
+
+	service := user.NewService(repository, validators)
 
 	router := createRouter(service, logger)
 

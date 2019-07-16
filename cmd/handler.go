@@ -16,6 +16,19 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 		router := "create-user"
 		usr := user.User{}
 
+		b, vErr := svc.JSONValidator(r.Body)
+		if vErr != nil {
+			writeError(w, vErr)
+			user.LogError(ctx, logger, router, "error on validate json", vErr, zap.Any("valid-json: ", b))
+			return
+		}
+		if !b {
+			icErr := user.NewInvalidContentError("invalid content on input")
+			user.LogError(ctx, logger, router, "invalid content on input", icErr)
+			writeError(w, icErr)
+			return
+		}
+
 		pErr := parseJSON(r.Body, &usr)
 		if pErr != nil {
 			writeError(w, pErr)
@@ -28,6 +41,7 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 			user.LogError(ctx, logger, router, "cannot save user on database", err, zap.Any("result", result))
 			return
 		}
+
 		lastID, lErr := result.LastInsertId()
 		if lErr != nil {
 			user.LogError(ctx, logger, router, "error on get last insert id", lErr, zap.Int64("last-id", lastID))
