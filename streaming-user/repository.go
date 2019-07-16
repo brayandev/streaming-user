@@ -18,7 +18,7 @@ type RepositoryQuery struct {
 
 // Repository implements repository methods.
 type Repository interface {
-	insertUser(ctx context.Context, user *User) (sql.Result, error)
+	insertUser(ctx context.Context, user User) (sql.Result, error)
 }
 
 // RepositoryImpl repository dependecies.
@@ -35,7 +35,7 @@ func NewRepository(db Database, dbTimeout time.Duration) *RepositoryImpl {
 	}
 }
 
-func (r *RepositoryImpl) insertUser(ctx context.Context, user *User) (sql.Result, error) {
+func (r *RepositoryImpl) insertUser(ctx context.Context, user User) (sql.Result, error) {
 	ctxTimeout, ctxCancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer ctxCancel()
 

@@ -7,7 +7,7 @@ import (
 
 // Service methods.
 type Service interface {
-	InsertUser(ctx context.Context, user *User) (sql.Result, error)
+	InsertUser(ctx context.Context, user User) (sql.Result, error)
 }
 
 // ServiceImpl service dependecies.
@@ -23,6 +23,6 @@ func NewService(repository Repository) *ServiceImpl {
 }
 
 // InsertUser insert user on db.
-func (s ServiceImpl) InsertUser(ctx context.Context, user *User) (sql.Result, error) {
+func (s ServiceImpl) InsertUser(ctx context.Context, user User) (sql.Result, error) {
 	return s.repository.insertUser(ctx, user)
 }

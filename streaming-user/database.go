@@ -12,7 +12,7 @@ import (
 
 // Database methods.
 type Database interface {
-	ExecInsertItem(ctx context.Context, query RepositoryQuery, args ...interface{}) (sql.Result, error)
+	ExecInsertItem(ctx context.Context, query RepositoryQuery, user User) (sql.Result, error)
 }
 
 // LoggableDatabase database dependencies.
@@ -22,15 +22,15 @@ type LoggableDatabase struct {
 }
 
 // ExecInsertItem insert item on database.
-func (d *LoggableDatabase) ExecInsertItem(ctx context.Context, query RepositoryQuery, args ...interface{}) (sql.Result, error) {
+func (d *LoggableDatabase) ExecInsertItem(ctx context.Context, query RepositoryQuery, user User) (sql.Result, error) {
 	start := time.Now()
-	result, err := d.target.ExecInsertItem(ctx, query, args)
+	result, err := d.target.ExecInsertItem(ctx, query, user)
 
 	d.logger.Info(
 		"db query",
 		zap.String("query", query.Name),
 		zap.Duration("duration", time.Since(start)),
-		zap.Any("args", args),
+		zap.Any("user", user),
 		zap.NamedError("error", err),
 	)
 
@@ -53,10 +53,11 @@ func NewMySQL(driverName, dataSourceName string, healthTimeout time.Duration, lo
 }
 
 // ExecInsertItem insert item on database.
-func (d *MySQLDatabase) ExecInsertItem(ctx context.Context, query RepositoryQuery, args ...interface{}) (sql.Result, error) {
+func (d *MySQLDatabase) ExecInsertItem(ctx context.Context, query RepositoryQuery, user User) (sql.Result, error) {
 	stm, err := d.db.PrepareContext(ctx, query.Query)
 	if err != nil {
 		return nil, err
 	}
-	return stm.ExecContext(ctx, args)
+
+	return stm.ExecContext(ctx, user.Name, user.Email)
 }

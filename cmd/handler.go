@@ -14,12 +14,12 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		router := "create-user"
-		usr := &user.User{}
+		usr := user.User{}
 
 		pErr := parseJSON(r.Body, &usr)
 		if pErr != nil {
 			writeError(w, pErr)
-			user.LogError(ctx, logger, router, "cannot parse content", pErr)
+			return
 		}
 
 		result, err := svc.InsertUser(ctx, usr)
