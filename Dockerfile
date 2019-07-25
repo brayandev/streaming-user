@@ -9,6 +9,7 @@ RUN apk update && apk add --no-cache \
 WORKDIR /go/src/github.com/streaming-user
 
 COPY . .
+COPY ./schemas /schemas
 
 RUN make build
 
@@ -18,5 +19,6 @@ RUN apk update && apk add --no-cache \
     ca-certificates
 
 COPY --from=builder /go/src/github.com/streaming-user/bin/linux_amd64/strm-user /usr/bin
+COPY --from=builder /go/src/github.com/streaming-user/schemas /schemas/
 CMD ["/usr/bin/strm-user"]
 EXPOSE 8080

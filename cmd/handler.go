@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	user "github.com/streaming-user/streaming-user"
+	user "github.com/streaming-user/strm-user"
 	"go.uber.org/zap"
 )
 
@@ -16,22 +16,24 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 		router := "create-user"
 		usr := user.User{}
 
-		b, vErr := svc.JSONValidator(r.Body)
-		if vErr != nil {
-			writeError(w, vErr)
-			user.LogError(ctx, logger, router, "error on validate json", vErr, zap.Any("valid-json: ", b))
-			return
-		}
-		if !b {
-			icErr := user.NewInvalidContentError("invalid content on input")
-			user.LogError(ctx, logger, router, "invalid content on input", icErr)
-			writeError(w, icErr)
-			return
-		}
-
 		pErr := parseJSON(r.Body, &usr)
 		if pErr != nil {
 			writeError(w, pErr)
+			user.LogError(ctx, logger, router, "cannot parse json", pErr)
+			return
+		}
+
+		isValid, vErr := svc.Validate(&usr)
+		if vErr != nil {
+			writeError(w, vErr)
+			user.LogError(ctx, logger, router, "the document is invalid", vErr)
+			return
+		}
+
+		if !isValid {
+			err := user.NewUnprocessableEntityError("data from request is invalid")
+			writeError(w, err)
+			user.LogError(ctx, logger, router, "failed to validate", err, zap.Bool("is-valid", isValid))
 			return
 		}
 
@@ -101,7 +103,8 @@ func getErrorHTTPCode(err *user.Error) int {
 	switch err.ErrType {
 	case user.ErrorInvalidContent:
 		return http.StatusBadRequest
-
+	case user.ErrorUnprocessableEntity:
+		return http.StatusUnprocessableEntity
 	default:
 		return http.StatusInternalServerError
 	}

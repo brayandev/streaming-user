@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/facebookgo/grace/gracehttp"
-	user "github.com/streaming-user/streaming-user"
+	user "github.com/streaming-user/strm-user"
 	"go.uber.org/zap"
 )
 
@@ -26,11 +26,11 @@ func main() {
 		logger.Error("failed to create a new connection on db", zap.Error(dbErr))
 	}
 
+	validator := user.NewValidator("schemas", "user-schema")
+
 	repository := user.NewRepository(db, cfg.DBTimeout)
 
-	validators := user.NewValidators()
-
-	service := user.NewService(repository, validators)
+	service := user.NewService(repository, validator)
 
 	router := createRouter(service, logger)
 

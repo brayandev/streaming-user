@@ -9,14 +9,16 @@ type ErrorType int
 const (
 	ErrorUnknown ErrorType = iota
 	ErrorInvalidContent
+	ErrorUnprocessableEntity
 )
 
 // ErrorCodes
 const (
-	ErrorCodeUnknown string = "STRM0000"
+	ErrorCodeUnknown string = "STRU0000"
 
-	// Common errors STRMxxx.
-	ErrorCodeInvalidContent = "STRM1001"
+	// Common errors STRUxxx.
+	ErrorCodeInvalidContent      = "STRU1001"
+	ErrorCodeUnprocessableEntity = "STRU1002"
 )
 
 // Error representation of error.
@@ -36,9 +38,14 @@ func NewUnknownError(message string) *Error {
 	return NewError(ErrorCodeUnknown, message, ErrorUnknown)
 }
 
-// NewInvalidContentError constructor of jobad-inspector invalid content error
+// NewInvalidContentError constructor of strm-user invalid content error
 func NewInvalidContentError(message string) *Error {
 	return NewError(ErrorCodeInvalidContent, message, ErrorInvalidContent)
+}
+
+// NewUnprocessableEntityError constructor of strm-user unprocessable entity error.
+func NewUnprocessableEntityError(message string) *Error {
+	return NewError(ErrorCodeUnprocessableEntity, message, ErrorUnprocessableEntity)
 }
 
 // Error return a string representation of and Error.

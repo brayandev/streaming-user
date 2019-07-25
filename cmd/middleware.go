@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	user "github.com/streaming-user/streaming-user"
+	user "github.com/streaming-user/strm-user"
 	"go.uber.org/zap"
 )
 

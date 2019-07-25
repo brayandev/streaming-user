@@ -1,0 +1,16 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+    	"name": {
+        	"type": "string",
+            "description":"name of user"
+        },
+        "email": {
+        	"type": "string",
+            "description": "email of user",
+            "minLength": 10,
+            "maxLength": 255
+    	}
+    },
+    "required": ["name", "email"]
+}
