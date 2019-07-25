@@ -26,7 +26,7 @@ func main() {
 		logger.Error("failed to create a new connection on db", zap.Error(dbErr))
 	}
 
-	validator := user.NewValidator("schemas", "user-schema")
+	validator := user.NewValidator(cfg.SchemaPath, cfg.SchemaName)
 
 	repository := user.NewRepository(db, cfg.DBTimeout)
 

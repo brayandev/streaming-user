@@ -46,10 +46,12 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 
 		lastID, lErr := result.LastInsertId()
 		if lErr != nil {
+			writeError(w, lErr)
 			user.LogError(ctx, logger, router, "error on get last insert id", lErr, zap.Int64("last-id", lastID))
 			return
 		}
-		responseWriter(w, http.StatusCreated, nil, lastID)
+		usr.ID = lastID
+		responseWriter(w, http.StatusCreated, usr)
 	}
 }
 
@@ -61,41 +63,30 @@ func versionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(user.JSON()))
 }
 
-func responseWriter(w http.ResponseWriter, code int, content versionable, response interface{}) error {
+func responseWriter(w http.ResponseWriter, code int, content versionable) error {
 	if content == nil {
 		w.WriteHeader(code)
 		return nil
 	}
-
-	jsonContent, err := json.Marshal(content)
-	if err != nil {
-		return err
-	}
-
-	resp, err := json.Marshal(response)
-	if err != nil {
-		return err
-	}
-
 	contentType := "application/json"
 	if content.Version() != "" {
 		contentType = fmt.Sprintf("application/%s+json", content.Version())
 	}
-
 	w.Header().Set("Content-Type", fmt.Sprintf("%s; charset=utf-8", contentType))
 	w.WriteHeader(code)
-	w.Write(jsonContent)
-	w.Write(resp)
-
+	err := json.NewEncoder(w).Encode(content)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func writeError(w http.ResponseWriter, err error) {
 	switch tErr := err.(type) {
 	case *user.Error:
-		responseWriter(w, getErrorHTTPCode(tErr), tErr, nil)
+		responseWriter(w, getErrorHTTPCode(tErr), tErr)
 	default:
-		responseWriter(w, http.StatusInternalServerError, user.NewUnknownError(err.Error()), nil)
+		responseWriter(w, http.StatusInternalServerError, user.NewUnknownError(err.Error()))
 	}
 }
 

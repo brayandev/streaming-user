@@ -17,6 +17,8 @@ type Config struct {
 	DBTimeout    time.Duration  `envconfig:"DB_HEALTH_TIMEOUT" default:"1s"`
 	ReadTimeout  time.Duration  `envconfig:"READ_TIMEOUT" default:"2s"`
 	WriteTimeout time.Duration  `envconfig:"WRITE_TIMEOUT" default:"2s"`
+	SchemaPath   string         `envconfig:"SCHEMA_PATH"`
+	SchemaName   string         `envconfig:"SCHEMA_NAME"`
 }
 
 func newConfig() (*Config, error) {

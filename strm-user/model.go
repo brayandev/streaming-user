@@ -6,3 +6,8 @@ type User struct {
 	Name  string `json:"name,omitempty"`
 	Email string `json:"email,omitempty"`
 }
+
+// Version user version.
+func (User) Version() string {
+	return "strm-user.user.v1"
+}
