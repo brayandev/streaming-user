@@ -11,7 +11,7 @@ func createRouter(service user.Service, logger *zap.Logger) chi.Router {
 
 	router.Use(contextMiddleware)
 	router.With(accessLogMiddleware(logger)).Route("/user", func(router chi.Router) {
-		router.Post("/create", createUserHandler(service, logger))
+		router.Post("/", createUserHandler(service, logger))
 	})
 
 	router.Get("/version", versionHandler)
