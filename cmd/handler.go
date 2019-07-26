@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	user "github.com/streaming-user/strm-user"
 	"go.uber.org/zap"
@@ -37,6 +38,7 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 			return
 		}
 
+		usr.Creation = time.Now().UTC()
 		result, err := svc.InsertUser(ctx, usr)
 		if err != nil {
 			writeError(w, err)

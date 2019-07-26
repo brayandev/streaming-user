@@ -10,7 +10,7 @@
             "description": "email of user",
             "minLength": 10,
             "maxLength": 255
-    	}
+        }
     },
     "required": ["name", "email"]
 }

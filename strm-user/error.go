@@ -14,11 +14,11 @@ const (
 
 // ErrorCodes
 const (
-	ErrorCodeUnknown string = "STRU0000"
+	ErrorCodeUnknown string = "STRUM0000"
 
-	// Common errors STRUxxx.
-	ErrorCodeInvalidContent      = "STRU1001"
-	ErrorCodeUnprocessableEntity = "STRU1002"
+	// Common errors STRUMxxx.
+	ErrorCodeInvalidContent      = "STRMU1001"
+	ErrorCodeUnprocessableEntity = "STRMU1002"
 )
 
 // Error representation of error.
