@@ -26,12 +26,16 @@ func (d *LoggableDatabase) ExecInsertItem(ctx context.Context, query RepositoryQ
 	start := time.Now()
 	result, err := d.target.ExecInsertItem(ctx, query, user)
 
+	lastID, lErr := result.LastInsertId()
+	user.ID = lastID
+
 	d.logger.Info(
 		"db query",
 		zap.String("query", query.Name),
 		zap.Duration("duration", time.Since(start)),
 		zap.Any("user", user),
 		zap.NamedError("error", err),
+		zap.NamedError("error-last-id", lErr),
 	)
 
 	return result, err
