@@ -57,6 +57,10 @@ func createUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
 	}
 }
 
+func getUserHandler(svc user.Service, logger *zap.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {}
+}
+
 // versionHandler returns application version.
 func versionHandler(w http.ResponseWriter, r *http.Request) {
 	contentType := "application/json"
