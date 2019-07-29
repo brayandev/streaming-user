@@ -9,6 +9,7 @@ import (
 type Service interface {
 	InsertUser(ctx context.Context, user User) (sql.Result, error)
 	Validate(content interface{}) (bool, error)
+	GetUser(ctx context.Context, id int64) (User, error)
 }
 
 // ServiceImpl service dependecies.
@@ -33,4 +34,9 @@ func (s ServiceImpl) InsertUser(ctx context.Context, user User) (sql.Result, err
 // Validate validate input using json schema.
 func (s ServiceImpl) Validate(content interface{}) (bool, error) {
 	return s.validator.Validate(content)
+}
+
+// GetUser get one user by id.
+func (s ServiceImpl) GetUser(ctx context.Context, id int64) (User, error) {
+	return s.GetUser(ctx, id)
 }

@@ -13,6 +13,7 @@ import (
 // Database methods.
 type Database interface {
 	ExecInsertItem(ctx context.Context, query RepositoryQuery, user User) (sql.Result, error)
+	QuerySingleResult(ctx context.Context, scanner DatabaseMapperFn, query RepositoryQuery, args ...interface{}) (interface{}, error)
 }
 
 // LoggableDatabase database dependencies.
@@ -41,6 +42,21 @@ func (d *LoggableDatabase) ExecInsertItem(ctx context.Context, query RepositoryQ
 	return result, err
 }
 
+// QuerySingleResult insert item on database.
+func (d *LoggableDatabase) QuerySingleResult(ctx context.Context, scanner DatabaseMapperFn, query RepositoryQuery, args ...interface{}) (interface{}, error) {
+	start := time.Now()
+	result, err := d.target.QuerySingleResult(ctx, scanner, query, args)
+
+	d.logger.Info(
+		"db query",
+		zap.String("query", query.Name),
+		zap.Duration("duration", time.Since(start)),
+		zap.Any("args", args),
+		zap.NamedError("error", err),
+	)
+	return result, err
+}
+
 // MySQLDatabase is a connection with a MySQL database.
 type MySQLDatabase struct {
 	db            *sql.DB
@@ -64,4 +80,17 @@ func (d *MySQLDatabase) ExecInsertItem(ctx context.Context, query RepositoryQuer
 	}
 
 	return stm.ExecContext(ctx, user.Name, user.Email)
+}
+
+// RowScanner used to accept a sql.Row.
+type RowScanner interface {
+	Scan(dest ...interface{}) error
+}
+
+// DatabaseMapperFn scanner.
+type DatabaseMapperFn func(row RowScanner) (interface{}, error)
+
+// QuerySingleResult get one result on database.
+func (d *MySQLDatabase) QuerySingleResult(ctx context.Context, scanner DatabaseMapperFn, query RepositoryQuery, args ...interface{}) (interface{}, error) {
+	return d.db.QueryContext(ctx, query.Query, args)
 }
